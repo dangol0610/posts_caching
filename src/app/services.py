@@ -29,13 +29,15 @@ class PostsService:
         try:
             cached_post = await self.redis.get(f"post:{post_id}")
             if cached_post:
+                logger.info(f"Got post with id {post_id} from cache")
                 return ReturnPostDTO.model_validate_json(cached_post)
             post = await self.repository.get_by_id(post_id)
             if post is None:
                 raise PostNotFoundError
             logger.info(f"Got post with id {post_id}")
             res_post = ReturnPostDTO.model_validate(post)
-            await self.redis.set(f"post:{post_id}", res_post.model_dump_json())
+            await self.redis.set(f"post:{post_id}", res_post.model_dump_json(), ex=3600)
+            logger.info(f"Cached post with id {post_id}")
             return res_post
         except RedisError:
             logger.exception(f"Failed to get post with id {post_id}")
@@ -54,7 +56,8 @@ class PostsService:
                 raise PostNotFoundError
             logger.info(f"Updated post with id {post_id}")
             res_post = ReturnPostDTO.model_validate(post)
-            await self.redis.set(f"post:{post_id}", res_post.model_dump_json())
+            await self.redis.set(f"post:{post_id}", res_post.model_dump_json(), ex=3600)
+            logger.info(f"Cached post with id {post_id}")
             return res_post
         except RedisError:
             logger.exception(f"Failed to update post with id {post_id}")
