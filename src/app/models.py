@@ -7,6 +7,10 @@ from src.utils.database import Base
 
 
 class Post(Base):
+    """
+    Модель поста
+    """
+
     __tablename__ = "posts"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

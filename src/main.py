@@ -9,6 +9,9 @@ from src.utils.redis import redis_client
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """
+    Закрытие соединений с базой данных и Redis
+    """
     yield
     await redis_client.close()
     await engine.dispose()

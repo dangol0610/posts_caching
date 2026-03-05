@@ -1,0 +1,62 @@
+services:
+    postgres:
+        image: postgres:latest
+        container_name: postgres
+        env_file:
+            - ./src/.env.docker
+        ports:
+            - "5433:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql
+        networks:
+            - backend
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -h "$$POSTGRES_HOST" -p "$$POSTGRES_PORT"',
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+        redis:
+            image: redis:latest
+            container_name: redis
+            command: ["redis-server", "--appendonly", "yes"]
+            ports:
+                - "6377:6379"
+            volumes:
+                - redis_data:/data
+            networks:
+                - backend
+            healthcheck:
+                test: ["CMD", "redis-cli", "ping"]
+                interval: 5s
+                timeout: 5s
+                retries: 5
+
+    app:
+        build: .
+        image: posts-app
+        container_name: app
+        env_file:
+            - ./src/.env.docker
+        ports:
+            - "8000:8000"
+        depends_on:
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        networks:
+            - backend
+        volumes:
+            - .:/app
+
+networks:
+    backend:
+
+volumes:
+    postgres_data:
+    redis_data:

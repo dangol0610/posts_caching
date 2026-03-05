@@ -11,6 +11,9 @@ local_session = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    """
+    Получение сессии для работы с базой данных
+    """
     async with local_session() as session:
         yield session
 
