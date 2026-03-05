@@ -6,6 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from src.app.models import Post
 from src.settings.settings import settings
 from src.utils.database import Base
 
