@@ -1,3 +1,5 @@
+import os
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,7 +33,9 @@ class Settings(BaseSettings):
         """
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_CACHE_DB}"
 
-    model_config = SettingsConfigDict(env_file="src/.env")
+    model_config = SettingsConfigDict(
+        env_file="src/.env.test" if os.getenv("TESTING") == "True" else "src/.env"
+    )
 
 
 settings = Settings()

@@ -1,3 +1,5 @@
+"""Dependency injection для сервиса постов."""
+
 from typing import Annotated
 
 from fastapi import Depends

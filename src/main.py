@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from loguru import logger
 
 from src.routers.api_router import router as api_router
 from src.utils.database import engine
@@ -14,7 +15,9 @@ async def lifespan(app: FastAPI):
     """
     yield
     await redis_client.close()
+    logger.info("Redis connection closed")
     await engine.dispose()
+    logger.info("Database connection closed")
 
 
 app = FastAPI(

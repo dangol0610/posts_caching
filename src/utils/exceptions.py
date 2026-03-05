@@ -10,12 +10,6 @@ class PostNotFoundError(PostServiceError):
     pass
 
 
-class PostAlreadyExistsError(PostServiceError):
-    """Исключение, возникающее при попытке создать существующий пост."""
-
-    pass
-
-
 class DatabaseError(PostServiceError):
     """Исключение, возникающее при ошибке в базе данных."""
 
