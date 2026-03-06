@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     REDIS_HOST: str = Field(default="redis")
     REDIS_PORT: int = Field(default=6379)
     REDIS_CACHE_DB: int = Field(default=0)
+    CACHE_TTL: int = Field(default=3600)
 
     @property
     def database_url(self) -> str:

@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from src.app.repository import PostsRepository
 from src.app.schemas import CreatePostDTO, ReturnPostDTO, UpdatePostDTO
+from src.settings.settings import settings
 from src.utils.exceptions import CacheError, DatabaseError, PostNotFoundError
 
 
@@ -13,6 +14,7 @@ class PostsService:
     def __init__(self, repository: PostsRepository, redis: Redis):
         self.repository = repository
         self.redis = redis
+        self.cache_ttl = settings.CACHE_TTL
 
     async def create_post(self, post: CreatePostDTO) -> ReturnPostDTO:
         """Создание поста."""
@@ -36,7 +38,9 @@ class PostsService:
                 raise PostNotFoundError
             logger.info(f"Got post with id {post_id}")
             res_post = ReturnPostDTO.model_validate(post)
-            await self.redis.set(f"post:{post_id}", res_post.model_dump_json(), ex=3600)
+            await self.redis.set(
+                f"post:{post_id}", res_post.model_dump_json(), ex=self.cache_ttl
+            )
             logger.info(f"Cached post with id {post_id}")
             return res_post
         except RedisError:
@@ -56,7 +60,9 @@ class PostsService:
                 raise PostNotFoundError
             logger.info(f"Updated post with id {post_id}")
             res_post = ReturnPostDTO.model_validate(post)
-            await self.redis.set(f"post:{post_id}", res_post.model_dump_json(), ex=3600)
+            await self.redis.set(
+                f"post:{post_id}", res_post.model_dump_json(), ex=self.cache_ttl
+            )
             logger.info(f"Cached post with id {post_id}")
             return res_post
         except RedisError:

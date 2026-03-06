@@ -51,7 +51,7 @@ async def redis():
 
     yield client
 
-    await client.flushdb()  # Очищаем кэш после теста
+    await client.flushdb()
     await client.close()
 
 
