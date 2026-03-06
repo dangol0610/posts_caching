@@ -47,7 +47,7 @@ async def db_session(db_engine: AsyncEngine):
 @pytest.fixture(scope="function")
 async def redis():
     """Создаёт Redis клиент для теста."""
-    client = Redis.from_url(settings.redis_url)
+    client: Redis = Redis.from_url(settings.redis_url)
 
     yield client
 
